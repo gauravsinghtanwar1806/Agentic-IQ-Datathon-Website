@@ -94,12 +94,7 @@ We use **Ollama to run Llama 3.2 locally** instead of relying on a hosted model 
 - Lucide React
 - CSS
 
-## Persistence
 
-- Firebase
-- Firestore
-
-Firebase is used for anonymous chat/conversation persistence when configured. There is no Firebase authentication in the dashboard.
 
 ---
 
@@ -489,18 +484,8 @@ using `dashboard/.env.example` as the template.
 ### Dashboard Environment Variables
 
 ```env
-VITE_FIREBASE_API_KEY=
-VITE_FIREBASE_AUTH_DOMAIN=
-VITE_FIREBASE_PROJECT_ID=
-VITE_FIREBASE_STORAGE_BUCKET=
-VITE_FIREBASE_MESSAGING_SENDER_ID=
-VITE_FIREBASE_APP_ID=
-VITE_FIREBASE_MEASUREMENT_ID=
-
 VITE_FINTRIX_API_URL=http://localhost:8000
 ```
-
-The Firebase variables are used for Firestore-based anonymous conversation persistence.
 
 `VITE_FINTRIX_API_URL` tells the dashboard where the Fintrix AI backend is running.
 
@@ -1509,17 +1494,7 @@ Charts / Tables / Risk Views
 
 For AI-related questions, the dashboard communicates with the FastAPI backend.
 
----
 
-# Firebase / Firestore
-
-Firebase is used for optional anonymous conversation persistence.
-
-When configured, Firestore stores chat history so that conversations can be continued across sessions.
-
-There is no Firebase authentication layer in the dashboard.
-
-If Firebase is not configured or unavailable, the chat storage layer can fall back to local browser persistence.
 
 ---
 

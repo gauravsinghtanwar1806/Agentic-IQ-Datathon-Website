@@ -1,21 +1,9 @@
 /**
- * Anonymous Chat Storage & Firestore Persistence Layer.
+ * Anonymous Chat Storage Layer.
  * Fintrix AI is a public demo fintech intelligence platform without user accounts.
- * Provides anonymous browser-level session IDs, persistent chat history,
+ * Provides anonymous browser-level session IDs, persistent chat history via LocalStorage,
  * new chat creation, conversation switching, and deletion.
  */
-import {
-  collection,
-  doc,
-  getDocs,
-  getDoc,
-  setDoc,
-  deleteDoc,
-  query,
-  where,
-  orderBy,
-} from 'firebase/firestore';
-import { db, isFirebaseConfigured } from './firebase';
 
 const ANON_SESSION_KEY = 'fintrix_anon_session_id';
 const LOCAL_CONVERSATIONS_KEY = 'fintrix_conversations_v1';
@@ -37,7 +25,7 @@ export function getAnonymousSessionId() {
 }
 
 // ----------------------------------------------------------------------
-// LocalStorage Fallback Helpers
+// LocalStorage Helpers
 // ----------------------------------------------------------------------
 function getLocalConversations() {
   try {
@@ -66,30 +54,6 @@ function saveLocalConversations(list) {
  */
 export async function listConversations() {
   const sessionId = getAnonymousSessionId();
-
-  if (isFirebaseConfigured && db) {
-    try {
-      const convsRef = collection(db, 'conversations');
-      const q = query(
-        convsRef,
-        where('sessionId', '==', sessionId),
-        orderBy('updatedAt', 'desc')
-      );
-      const snapshot = await getDocs(q);
-      const list = [];
-      snapshot.forEach((docSnap) => {
-        list.push({ id: docSnap.id, ...docSnap.data() });
-      });
-      if (list.length > 0) {
-        saveLocalConversations(list);
-        return list;
-      }
-    } catch (err) {
-      console.warn('[Firestore] Error fetching conversations, using local cache:', err);
-    }
-  }
-
-  // Fallback to local storage
   const localList = getLocalConversations().filter((c) => c.sessionId === sessionId);
   return localList.sort((a, b) => new Date(b.updatedAt || b.createdAt) - new Date(a.updatedAt || a.createdAt));
 }
@@ -112,25 +76,9 @@ export async function createConversation(initialTitle = 'New Analysis') {
     messages: [],
   };
 
-  // 1. Update local storage
   const localList = getLocalConversations();
   localList.unshift(convData);
   saveLocalConversations(localList);
-
-  // 2. Persist to Firestore if available
-  if (isFirebaseConfigured && db) {
-    try {
-      await setDoc(doc(db, 'conversations', convId), {
-        conversationId: convId,
-        sessionId: sessionId,
-        title: initialTitle,
-        createdAt: now,
-        updatedAt: now,
-      });
-    } catch (err) {
-      console.warn('[Firestore] Error creating conversation document:', err);
-    }
-  }
 
   return convData;
 }
@@ -156,7 +104,6 @@ export async function saveMessageToConversation(conversationId, message) {
     createdAt: now,
   };
 
-  // 1. Update local storage
   const localList = getLocalConversations();
   const idx = localList.findIndex((c) => c.id === conversationId || c.conversationId === conversationId);
   if (idx !== -1) {
@@ -172,18 +119,6 @@ export async function saveMessageToConversation(conversationId, message) {
     saveLocalConversations(localList);
   }
 
-  // 2. Persist to Firestore if available
-  if (isFirebaseConfigured && db) {
-    try {
-      const convDocRef = doc(db, 'conversations', conversationId);
-      const msgDocRef = doc(collection(convDocRef, 'messages'), msgObj.id);
-      await setDoc(msgDocRef, msgObj);
-      await setDoc(convDocRef, { updatedAt: now }, { merge: true });
-    } catch (err) {
-      console.warn('[Firestore] Error saving message:', err);
-    }
-  }
-
   return msgObj;
 }
 
@@ -193,22 +128,6 @@ export async function saveMessageToConversation(conversationId, message) {
 export async function loadConversationMessages(conversationId) {
   if (!conversationId) return [];
 
-  if (isFirebaseConfigured && db) {
-    try {
-      const msgsRef = collection(db, 'conversations', conversationId, 'messages');
-      const q = query(msgsRef, orderBy('createdAt', 'asc'));
-      const snapshot = await getDocs(q);
-      const msgs = [];
-      snapshot.forEach((snap) => {
-        msgs.push(snap.data());
-      });
-      if (msgs.length > 0) return msgs;
-    } catch (err) {
-      console.warn('[Firestore] Error loading messages, checking local storage:', err);
-    }
-  }
-
-  // Fallback to local storage
   const localList = getLocalConversations();
   const conv = localList.find((c) => c.id === conversationId || c.conversationId === conversationId);
   return conv && conv.messages ? conv.messages : [];
@@ -220,18 +139,8 @@ export async function loadConversationMessages(conversationId) {
 export async function deleteConversation(conversationId) {
   if (!conversationId) return;
 
-  // 1. Remove from local storage
   const localList = getLocalConversations().filter(
     (c) => c.id !== conversationId && c.conversationId !== conversationId
   );
   saveLocalConversations(localList);
-
-  // 2. Remove from Firestore if available
-  if (isFirebaseConfigured && db) {
-    try {
-      await deleteDoc(doc(db, 'conversations', conversationId));
-    } catch (err) {
-      console.warn('[Firestore] Error deleting conversation:', err);
-    }
-  }
 }
