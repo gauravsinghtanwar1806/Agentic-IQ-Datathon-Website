@@ -1,5 +1,7 @@
 # Fintrix - UPI Fraud Ring & Merchant Analytics
 
+**GitHub Repository:** [Rajathraj12/Fintrix-UPI-Fraud-Ring-Merchant-Risk-Analytics-Platform](https://github.com/Rajathraj12/Fintrix-UPI-Fraud-Ring-Merchant-Risk-Analytics-Platform)
+
 > TransOrg AgentIQ Datathon 2026 - Track 1: FinTech & BFSI
 
 Fintrix is our attempt to turn messy UPI payment data into something that a risk or operations team can actually work with.
