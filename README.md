@@ -137,8 +137,7 @@ TransOrg-AgentIQ-Datathon/
 |   └── validate_data.py
 |
 ├── docs/
-|   ├── data_dictionary.md
-|   └── architecture.png
+|   └── data_dictionary.md
 |
 ├── fintrix_ai/
 |   ├── .env.example
