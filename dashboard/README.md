@@ -1,16 +1,40 @@
-# React + Vite
+# 📊 Fintrix Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+The interactive frontend dashboard for Fintrix AI, providing a comprehensive view of the payments ecosystem, merchant intelligence, dispute analytics, and risk indicators. Built for the TransOrg AgentIQ Datathon.
 
-Currently, two official plugins are available:
+## Tech Stack
+- **Framework:** React + Vite
+- **Visualizations:** Recharts, Plotly, Leaflet, React Simple Maps
+- **Data Parsing:** Papa Parse
+- **Icons:** Lucide React
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Key Features
+- **Overview:** Transaction activity, key KPIs, and risk indicators.
+- **City Risk Map:** Geographic view of transactions and risk across India.
+- **Disputes & Chargebacks:** Analyzes chargeback patterns, severity, and resolution statuses.
+- **Merchant Intelligence:** Tracks merchant performance, categories, and anomaly detection.
+- **Data Quality & KYC:** Brings together KYC status, risk segments, and identity anomalies.
+- **Fintrix AI:** Interactive chat interface communicating directly with the Fintrix AI backend for conversational insights.
 
-## React Compiler
+## Quickstart
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 1. Install Dependencies
+```bash
+cd dashboard
+npm install
+```
 
-## Expanding the Oxlint configuration
+### 2. Configure Environment
+Create a `.env` file in the `dashboard` directory based on `.env.example`:
+```env
+VITE_FINTRIX_API_URL=http://localhost:8000
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+### 3. Run Development Server
+```bash
+npm run dev
+```
+Navigate to `http://localhost:5173` in your browser.
+
+## Data Integration
+The dashboard loads cleaned and processed CSV files directly into a shared React `DataContext` using Papa Parse, ensuring fast, client-side filtering and charting without needing a heavy database for the analytical views. The Fintrix AI chat interface connects to the FastAPI backend.

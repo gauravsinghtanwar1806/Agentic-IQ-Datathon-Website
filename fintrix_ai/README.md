@@ -1,16 +1,15 @@
 # 🤖 Fintrix AI — Conversational Financial Intelligence Agent Backend
-> Powered by Hugging Face Inference API & SmolAgents | Track 1: Payments Risk & Forensics
+> Powered by Local Ollama & SmolAgents | Track 1: Payments Risk & Forensics
 
 ---
 
 ## 📌 Overview
 
 **Fintrix AI** is the backend agentic conversational intelligence layer designed to serve:
-1. The **Fintrix Web Application**
-2. The **Mobile App**
-3. The **Interactive Analytics Dashboard**
+1. The **Fintrix Web Application** (Frontend)
+2. The **Interactive Analytics Dashboard**
 
-It connects Hugging Face tool-calling LLMs with deterministic data retrieval tools, risk scoring models, and domain knowledge to provide explainable financial forensics on real UPI transaction and dispute datasets without hallucination.
+It connects local Ollama tool-calling LLMs with deterministic data retrieval tools, risk scoring models, and domain knowledge to provide explainable financial forensics on real UPI transaction and dispute datasets without hallucination.
 
 ---
 
@@ -19,7 +18,7 @@ It connects Hugging Face tool-calling LLMs with deterministic data retrieval too
 ```
 fintrix_ai/
 │
-├── .env                     # Local environment variables (HF_TOKEN)
+├── .env                     # Local environment variables
 ├── .env.example             # Template environment variables
 ├── .gitignore               # Ignored artifacts and secrets
 ├── requirements.txt         # Python dependencies
@@ -32,11 +31,10 @@ fintrix_ai/
 │   ├── agent/               # SmolAgents orchestration
 │   │   ├── __init__.py
 │   │   ├── agent.py         # Agent factory (ToolCallingAgent / CodeAgent)
-│   │   ├── config.py        # Environment & model configuration
+│   │   ├── config.py        # Environment & Ollama configuration
 │   │   └── prompts.py       # Financial system prompts
 │   │
 │   ├── tools/               # Controlled deterministic tools (Phases 3-9)
-│   │   ├── __init__.py
 │   │   ├── transaction_tools.py # get_transaction(txn_id)
 │   │   ├── customer_tools.py    # get_customer(user_id)
 │   │   ├── merchant_tools.py    # get_merchant(merchant_id)
@@ -46,21 +44,17 @@ fintrix_ai/
 │   │   └── knowledge_tools.py   # Static glossary & domain facts
 │   │
 │   ├── data/                # Data loader for clean datasets
-│   │   ├── __init__.py
 │   │   └── data_loader.py   # Cached access to 20K txns, 2.8K CB, 36K KYC, 6.2K merchants
 │   │
-│   ├── rag/                 # Modular RAG subsystem (Phase 9)
-│   │   ├── __init__.py
+│   ├── rag/                 # Modular RAG subsystem
 │   │   ├── retriever.py     # Static document retriever
 │   │   └── documents/       # Knowledge base markdown files
 │   │
 │   └── schemas/             # Pydantic request/response models
-│       ├── __init__.py
 │       └── response_models.py
 │
 └── tests/
-    ├── __init__.py
-    └── test_agent.py        # Phase 2 Agent verification test
+    └── test_agent.py        # Agent verification test
 ```
 
 ---
@@ -73,36 +67,33 @@ cd fintrix_ai
 pip install -r requirements.txt
 ```
 
-### 2. Configure Hugging Face API Token
+### 2. Configure Local Ollama Environment
 Create or update `fintrix_ai/.env`:
 ```env
-HF_TOKEN=hf_your_actual_token_here
-HF_MODEL_ID=Qwen/Qwen2.5-Coder-32B-Instruct
+OLLAMA_MODEL=llama3.2
+LLM_PROVIDER=ollama
 HOST=0.0.0.0
 PORT=8000
 ```
-> *Get a free Hugging Face User Access Token at [huggingface.co/settings/tokens](https://huggingface.co/settings/tokens).*
+*Note: Make sure you have [Ollama](https://ollama.com/) running locally and have pulled the model (`ollama pull llama3.2`).*
 
 ---
 
-### 3. Run Phase 2 Agent Verification Test
+### 3. Run Agent Verification Tests
+You can run the test suite to verify the agent tool bindings and Ollama connection:
 ```bash
-python fintrix_ai/tests/test_agent.py
+pytest fintrix_ai/tests/
 ```
 
 Expected Output:
-```
-============================================================
-FINTRIX AI - PHASE 2 AGENT VERIFICATION TEST
-============================================================
-Model ID: Qwen/Qwen2.5-Coder-32B-Instruct
-HF_TOKEN Configured: [YES - Configured]
+```text
+============================= test session starts =============================
+collected 76 items
 
-User Prompt: "Hello, introduce yourself as Fintrix AI."
-------------------------------------------------------------
-Calling Hugging Face Inference API via SmolAgents...
+test_agent.py .
+test_analytics_tools.py ........
 ...
-[SUCCESS] Phase 2 Test Passed: Fintrix AI Agent connected to Hugging Face and responded successfully!
+============================= 76 passed =============================
 ```
 
 ---
@@ -118,5 +109,5 @@ Visit API Documentation: `http://localhost:8000/docs`
 
 ## 🔒 Safety & Architectural Rules
 1. **No Hallucinations**: Financial amounts, complaint counts, and user data are retrieved via deterministic Python tools.
-2. **Database Migration**: Modular data loader supports current clean CSVs and ready for Firebase / Firestore adapter integration.
+2. **Database Migration**: Modular data loader supports current clean CSVs.
 3. **No Unrestricted Access**: The LLM interacts strictly through typed tools.
