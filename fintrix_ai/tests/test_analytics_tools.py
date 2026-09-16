@@ -21,7 +21,7 @@ from app.tools.analytics_tools import (
 )
 from app.agent.agent import create_fintrix_agent, run_guarded_agent
 from app.services.usage_tracker import UsageTracker
-from app.agent.config import HF_TOKEN, HF_MODEL_ID, HF_PROVIDER
+from app.agent.config import LLM_PROVIDER, OLLAMA_MODEL
 
 
 def test_1_transaction_analytics_basic():

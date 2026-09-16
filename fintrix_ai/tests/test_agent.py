@@ -13,7 +13,7 @@ if sys.stdout.encoding != 'utf-8':
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from app.agent.agent import create_fintrix_agent
-from app.agent.config import HF_TOKEN, HF_MODEL_ID, HF_PROVIDER
+from app.agent.config import LLM_PROVIDER, OLLAMA_MODEL
 
 
 def test_agent_introduction():
@@ -24,18 +24,18 @@ def test_agent_introduction():
     print("=" * 60)
     print("FINTRIX AI - PHASE 2 AGENT VERIFICATION TEST")
     print("=" * 60)
-    print(f"Model ID: {HF_MODEL_ID}")
-    print(f"Provider: {HF_PROVIDER}")
-    print(f"HF_TOKEN Configured: {'[YES - Configured]' if HF_TOKEN else '[NO - Unset]'}")
+    print(f"Model ID: {OLLAMA_MODEL}")
+    print(f"Provider: {LLM_PROVIDER}")
+    print(f"LLM_PROVIDER Configured: {'[YES - Configured]' if LLM_PROVIDER else '[NO - Unset]'}")
     
     prompt = "Hello, introduce yourself as Fintrix AI."
     print(f"\nUser Prompt: \"{prompt}\"")
     print("-" * 60)
 
-    if not HF_TOKEN:
-        print("[INFO] HF_TOKEN is not set in fintrix_ai/.env.")
-        print("[INFO] Please provide your Hugging Face API token in fintrix_ai/.env as:")
-        print("       HF_TOKEN=hf_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+    if not LLM_PROVIDER:
+        print("[INFO] LLM_PROVIDER is not set in fintrix_ai/.env.")
+        print("[INFO] Please provide your Ollama API token in fintrix_ai/.env as:")
+        print("       LLM_PROVIDER=hf_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
         print("\n[INFO] You can obtain a free token at https://huggingface.co/settings/tokens")
         print("=" * 60)
         return False
@@ -44,7 +44,7 @@ def test_agent_introduction():
         # Create minimal agent (no tools required for introductory test)
         agent = create_fintrix_agent(tools=[])
         
-        print("Calling Hugging Face Inference API via SmolAgents...")
+        print("Calling Ollama Inference API via Ollama...")
         response = agent.run(prompt)
         
         print("\nAgent Response:")
@@ -54,7 +54,7 @@ def test_agent_introduction():
         
         assert response is not None, "Agent returned None response"
         assert len(str(response).strip()) > 0, "Agent returned empty response"
-        print("\n[SUCCESS] Phase 2 Test Passed: Fintrix AI Agent connected to Hugging Face and responded successfully!")
+        print("\n[SUCCESS] Phase 2 Test Passed: Fintrix AI Agent connected to Ollama and responded successfully!")
         return True
 
     except Exception as e:

@@ -17,7 +17,7 @@ from app.tools.transaction_tools import get_transaction
 from app.agent.agent import create_fintrix_agent, run_guarded_agent
 from app.services.usage_tracker import UsageTracker
 from app.data.data_loader import data_loader
-from app.agent.config import HF_TOKEN, HF_MODEL_ID, HF_PROVIDER
+from app.agent.config import LLM_PROVIDER, OLLAMA_MODEL
 
 
 def test_1_valid_transaction():
@@ -134,8 +134,8 @@ def test_9_agent_risk_tool_calling():
     print("\n" + "=" * 60)
     print("TEST 9: Agent Tool Calling for Risk Investigation")
     print("=" * 60)
-    if not HF_TOKEN:
-        print("[SKIP] HF_TOKEN is not configured; skipping live LLM test.")
+    if not LLM_PROVIDER:
+        print("[SKIP] LLM_PROVIDER is not configured; skipping live LLM test.")
         return True
 
     agent = create_fintrix_agent(tools=[get_transaction, get_risk_score])
@@ -187,9 +187,9 @@ def run_all_risk_tests():
     print("=" * 60)
     print("FINTRIX AI - PHASE 4 RISK TOOL TEST SUITE")
     print("=" * 60)
-    print(f"Model ID: {HF_MODEL_ID}")
-    print(f"Provider: {HF_PROVIDER}")
-    print(f"HF_TOKEN: {'[CONFIGURED]' if HF_TOKEN else '[UNSET]'}")
+    print(f"Model ID: {OLLAMA_MODEL}")
+    print(f"Provider: {LLM_PROVIDER}")
+    print(f"LLM_PROVIDER: {'[CONFIGURED]' if LLM_PROVIDER else '[UNSET]'}")
     print("=" * 60)
 
     results = []

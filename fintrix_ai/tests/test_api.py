@@ -14,7 +14,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 
 from app.api.main import create_app
 from app.api.session import session_manager
-from app.agent.config import HF_TOKEN
+from app.agent.config import LLM_PROVIDER
 
 app = create_app()
 client = TestClient(app)
@@ -214,8 +214,8 @@ def test_11_no_token_leakage():
     with patch("app.api.routes.run_guarded_agent", return_value="Data processed safely."):
         response = client.post("/api/chat", json={"message": "Show account details", "session_id": "security-test"})
         res_str = str(response.json()).lower()
-        if HF_TOKEN:
-            assert HF_TOKEN.lower() not in res_str
+        if LLM_PROVIDER:
+            assert LLM_PROVIDER.lower() not in res_str
         assert "aadhaar" not in res_str
         assert "pan_number" not in res_str
         assert "settlement_account" not in res_str
@@ -248,11 +248,11 @@ def test_13_phase2_regression():
     print("TEST 13: Phase 2 Agent Configuration Regression")
     print("=" * 60)
     from app.agent.agent import create_fintrix_agent
-    from app.agent.config import HF_MODEL_ID, HF_PROVIDER
+    from app.agent.config import OLLAMA_MODEL, LLM_PROVIDER
     agent = create_fintrix_agent()
     assert agent is not None
-    assert agent.model.model_id == HF_MODEL_ID
-    print(f"Agent Model ID: {agent.model.model_id}, Provider: {HF_PROVIDER}")
+    assert agent.model.model_id == OLLAMA_MODEL
+    print(f"Agent Model ID: {agent.model.model_id}, Provider: {LLM_PROVIDER}")
     print("[PASS] TEST 13: Phase 2 agent layer operational.")
     return True
 

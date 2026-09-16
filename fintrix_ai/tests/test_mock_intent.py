@@ -120,7 +120,7 @@ class TestIntentAndMockMode(unittest.TestCase):
         the system seamlessly returns deterministic mock response without crashing.
         """
         with patch("app.api.routes.FINTRIX_LLM_MODE", "auto"):
-            with patch("app.api.routes.run_guarded_agent", return_value="Error: Hugging Face inference provider monthly included credits depleted."):
+            with patch("app.api.routes.run_guarded_agent", return_value="Error: Ollama inference provider monthly included credits depleted."):
                 response = client.post("/api/chat", json={
                     "message": "Give me a financial risk summary of the entire dataset.",
                     "session_id": "test-auto-fallback"
